@@ -1,0 +1,6 @@
+# Recipy
+
+## Model Update
+
+`python manage.py makemigrations`
+`python manage.py migrate`
