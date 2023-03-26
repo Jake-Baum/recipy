@@ -10,7 +10,7 @@ class Ingredient(models.Model):
 
 class Recipy(models.Model):
   title = models.CharField(max_length=50)
-  ingredients = models.ManyToManyField(Ingredient)
+  ingredients = models.ManyToManyField(Ingredient, related_name='recipies')
 
   def begins_with(self, s):
     return self.title.startswith(s)
