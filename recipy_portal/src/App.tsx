@@ -1,52 +1,46 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 
-type AppProps = {
-
+const createRecipyClicked = () => {
+  alert('Button clicked!')
 }
 
-type AppState = {
-  recipies: any[]
-}
+function App() {
 
-class App extends Component<AppProps, AppState> {
+  const [recipies, setRecipies] = useState([]);
 
-  constructor(props: any) {
-    super(props);
+  useEffect(() => {   
+    let mounted = true;
 
-    this.state = {
-      recipies: []
-    };
-  }
-
-  componentDidMount() {
     axios.get('/api/recipy').then(res => {
-      this.setState({ recipies: res.data });
+      if (mounted) {
+        setRecipies(res.data);
+      }
     }).catch(err => {
       console.error(err);
-    });
-  }
+    }); 
 
-  recipiesList = () => {
-    return this.state.recipies.map((item) => (
-      <li key={item.id}>
-        <span>{item.id} - {item.title}</span>
-      </li>
-    ));
-  };
+    return () => {mounted = false;};
+  }, []);
 
-  render() {
-    return (
-      <>
-        <h1>Recipy</h1>
-        <ul className="list-group list-group-flush border-top-0">
-          {this.recipiesList()}
-        </ul>
-      </>
-    );
-  }
+  return (
+    <>
+      <h1>Recipy</h1>
+      <ul>
+        {
+          recipies.map((item: any) => (
+            <li key={item.id}>
+              <span>{item.id} - {item.title}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <button onClick={createRecipyClicked}>Create Recipy</button>
+    </>
+  );
+
 }
 
 export default App;
