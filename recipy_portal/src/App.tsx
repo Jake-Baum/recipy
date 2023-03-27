@@ -2,45 +2,19 @@ import React, { Component, useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
-
-const createRecipyClicked = () => {
-  alert('Button clicked!')
-}
+import { Route, Routes } from 'react-router-dom';
+import RecipiesList from './components/RecipiesList';
+import RecipyForm from './components/forms/RecipyForm';
 
 function App() {
-
-  const [recipies, setRecipies] = useState([]);
-
-  useEffect(() => {   
-    let mounted = true;
-
-    axios.get('/api/recipy').then(res => {
-      if (mounted) {
-        setRecipies(res.data);
-      }
-    }).catch(err => {
-      console.error(err);
-    }); 
-
-    return () => {mounted = false;};
-  }, []);
-
   return (
     <>
-      <h1>Recipy</h1>
-      <ul>
-        {
-          recipies.map((item: any) => (
-            <li key={item.id}>
-              <span>{item.id} - {item.title}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <button onClick={createRecipyClicked}>Create Recipy</button>
+      <Routes>
+        <Route path="/" element={<RecipiesList />} />
+        <Route path="/recipy/create" element={<RecipyForm />} />
+      </Routes>
     </>
   );
-
 }
 
 export default App;
