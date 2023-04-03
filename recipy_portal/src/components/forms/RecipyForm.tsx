@@ -3,6 +3,7 @@ import { Button, Card, CardContent, CardHeader, FormHelperText, IconButton, Text
 import { FieldArray, Form, Formik } from "formik";
 import * as yup from 'yup';
 import IngredientForm, { INGREDIENT_VALIDATION_SCHEMA } from "./IngredientForm";
+import styles from './RecipyForm.module.css';
 
 const DEFAULT_INITIAL_VALUES = {
 	title: '',
@@ -24,7 +25,7 @@ export default function RecipyForm() {
 	return (
 		<>
 			<Card>
-				<CardHeader title="Create Recipy" />
+				<CardHeader title="Create Recipy" className={styles.something}/>
 				<CardContent>
 					<Formik
 						initialValues={DEFAULT_INITIAL_VALUES}
