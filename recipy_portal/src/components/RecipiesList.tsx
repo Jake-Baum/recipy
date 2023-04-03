@@ -22,7 +22,7 @@ export default function RecipiesList() {
 
 	return (
 		<>
-			<h1>Recipy</h1>
+			<h2>Recipies</h2>
 			<ul>
 				{
 					recipies.map((item: any) => (
