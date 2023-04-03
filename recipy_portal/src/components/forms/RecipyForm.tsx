@@ -43,9 +43,8 @@ export default function RecipyForm() {
 										error={touched.title && Boolean(errors.title)}
 										helperText={touched.title && errors.title}
 									/>
-									<FieldArray
-										name="ingredients"
-										render={
+									<FieldArray name="ingredients">
+										{
 											arrayHelpers => (
 												<div>
 													<IconButton type="button" onClick={() => arrayHelpers.push({ name: '' })}>
@@ -74,7 +73,7 @@ export default function RecipyForm() {
 												</div>
 											)
 										}
-									/>
+									</FieldArray>
 								</div>
 								<Button color="primary" variant="contained" type="submit" disabled={!isValid}>Save Recipy</Button>
 							</Form>
