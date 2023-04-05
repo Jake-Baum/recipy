@@ -27,6 +27,9 @@ class RecipiesView(APIView):
     return JsonResponse(recipy.data, safe=False)
   
 class RecipyView(APIView):
+  permission_classes = (IsAuthenticated, )
+  authentication_classes = (BasicAuthentication, )
+  
   def get(self, request, id):
     recipy = get_object_or_404(Recipy, pk=id)
 

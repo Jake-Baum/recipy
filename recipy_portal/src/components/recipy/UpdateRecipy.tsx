@@ -1,15 +1,33 @@
 import { Alert, Card, CardContent, CardHeader, Snackbar } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {useParams} from "react-router-dom"
 import RecipyForm from "./RecipyForm";
-import styles from './RecipyForm.module.css';
 
-export default function CreateRecipy() {
+export default function UpdateRecipy() {
 	const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
 	const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
+	const [recipy, setRecipy] = useState(undefined);
+
+	const id = useParams().id;
+	
+	useEffect(() => {
+		let mounted = true;
+
+		axios.get(`/api/recipy/${id}/`).then(response => {
+			if (mounted) {
+				setRecipy(response.data);
+			}
+		}).catch(error => {
+			console.error(error);
+		});
+
+		return () => { mounted = false; };
+	}, []);
+
 
 	const submit = (values: any, { setSubmitting }: any) => {
-		axios.post('/api/recipy/', values).then(response => {
+		axios.put(`/api/recipy/${id}/`, values).then(response => {
 			setShowSuccessSnackbar(true);
 		}).catch(error => {
 			setShowErrorSnackbar(true);
@@ -21,9 +39,9 @@ export default function CreateRecipy() {
 	return (
 		<>
 			<Card>
-				<CardHeader title="Create Recipy" className={styles.something} />
+				<CardHeader title="Update Recipy" />
 				<CardContent>
-					<RecipyForm submit={submit}></RecipyForm>
+					<RecipyForm submit={submit} value={recipy}></RecipyForm>
 				</CardContent>
 			</Card>
 
@@ -33,7 +51,7 @@ export default function CreateRecipy() {
 				anchorOrigin={{vertical: "bottom", horizontal: "center"}}
 				onClose={() => setShowSuccessSnackbar(false)}
 			>
-				<Alert onClose={() => setShowSuccessSnackbar(false)} severity="success">Recipy created successfully!</Alert>
+				<Alert onClose={() => setShowSuccessSnackbar(false)} severity="success">Recipy updated successfully!</Alert>
 			</Snackbar>
 
 			<Snackbar
@@ -42,7 +60,7 @@ export default function CreateRecipy() {
 				anchorOrigin={{vertical: "bottom", horizontal: "center"}}
 				onClose={() => setShowErrorSnackbar(false)}
 			>
-				<Alert onClose={() => setShowErrorSnackbar(false)} severity="error">Something went wrong during create</Alert>
+				<Alert onClose={() => setShowErrorSnackbar(false)} severity="error">Something went wrong during update</Alert>
 			</Snackbar>
 		</>
 	);

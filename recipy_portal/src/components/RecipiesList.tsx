@@ -27,7 +27,7 @@ export default function RecipiesList() {
 				{
 					recipies.map((item: any) => (
 						<li key={item.id}>
-							<span>{item.id} - {item.title}</span>
+							<Link to={`/recipy/${item.id}`}><span>{item.id} - {item.title}</span></Link>
 						</li>
 					))
 				}

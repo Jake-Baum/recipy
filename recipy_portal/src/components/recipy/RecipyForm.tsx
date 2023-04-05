@@ -2,9 +2,10 @@ import { Add, Remove } from "@mui/icons-material";
 import { Button, FormHelperText, IconButton, TextField } from "@mui/material";
 import { FieldArray, Form, Formik } from "formik";
 import * as yup from 'yup';
+import Recipy from "../../model/recipy.interface";
 import IngredientForm, { INGREDIENT_VALIDATION_SCHEMA } from "../forms/IngredientForm";
 
-const DEFAULT_INITIAL_VALUES = {
+const DEFAULT_INITIAL_VALUES: Recipy = {
 	title: '',
 	ingredients: []
 };
@@ -14,14 +15,14 @@ const RECIPY_VALIDATION_SCHEMA = yup.object({
 	ingredients: yup.array().of(INGREDIENT_VALIDATION_SCHEMA).min(1, 'Must create at least one ingredient')
 });
 
-export default function RecipyForm({submit}: any) {
-
+export default function RecipyForm(props: { submit: any, value?: Recipy }) {
 	return (
 		<>
 			<Formik
-				initialValues={DEFAULT_INITIAL_VALUES}
+				enableReinitialize={true}
+				initialValues={props.value || DEFAULT_INITIAL_VALUES}
 				validationSchema={RECIPY_VALIDATION_SCHEMA}
-				onSubmit={submit}
+				onSubmit={props.submit}
 			>
 				{({ values, errors, touched, handleChange, handleBlur, isValid }) => (
 					<Form >
