@@ -1,6 +1,8 @@
 import { Alert, Card, CardContent, CardHeader, Snackbar } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Recipy from "../../model/recipy.interface";
 import RecipyForm from "./RecipyForm";
 import styles from './RecipyForm.module.css';
 
@@ -8,9 +10,12 @@ export default function CreateRecipy() {
 	const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
 	const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
 
+	const navigate = useNavigate();
+
 	const submit = (values: any, { setSubmitting }: any) => {
-		axios.post('/api/recipy/', values).then(response => {
+		axios.post('/api/recipy/', values).then((response: {data: Recipy}) => {
 			setShowSuccessSnackbar(true);
+			navigate(`/recipy/${response.data.id}`);
 		}).catch(error => {
 			setShowErrorSnackbar(true);
 		}).finally(() => {
