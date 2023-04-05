@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
-import RecipyForm from './components/forms/RecipyForm';
 import RecipiesList from './components/RecipiesList';
+import CreateRecipy from './components/recipy/CreateRecipy';
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/recipies" />} />
           <Route path="/recipies" element={<RecipiesList />} />
-          <Route path="/recipy/create" element={<RecipyForm />} />
+          <Route path="/recipy/create" element={<CreateRecipy />} />
         </Routes>
       </div>
     </>
