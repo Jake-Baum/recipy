@@ -9,12 +9,12 @@ export default function RecipiesList() {
 	useEffect(() => {
 		let mounted = true;
 
-		axios.get('/api/recipy').then(res => {
+		axios.get('/api/recipy').then(response => {
 			if (mounted) {
-				setRecipies(res.data);
+				setRecipies(response.data);
 			}
-		}).catch(err => {
-			console.error(err);
+		}).catch(error => {
+			console.error(error);
 		});
 
 		return () => { mounted = false; };

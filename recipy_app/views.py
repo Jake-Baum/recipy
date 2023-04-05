@@ -1,12 +1,17 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+
 from rest_framework.views import APIView
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import RecipySerializer, IngredientSerializer
-
 from .models import Recipy, Ingredient
 
 class RecipiesView(APIView):
+  permission_classes = (IsAuthenticated, )
+  authentication_classes = (BasicAuthentication, )
+
   def get(self, request):
     recipies = Recipy.objects.filter(**request.GET.dict())
 

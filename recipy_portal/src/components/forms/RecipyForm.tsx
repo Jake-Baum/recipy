@@ -1,6 +1,8 @@
 import { Add, Remove } from "@mui/icons-material";
-import { Button, Card, CardContent, CardHeader, FormHelperText, IconButton, TextField } from "@mui/material";
+import { Alert, Button, Card, CardContent, CardHeader, FormHelperText, IconButton, Snackbar, TextField } from "@mui/material";
+import axios from "axios";
 import { FieldArray, Form, Formik } from "formik";
+import { useState } from "react";
 import * as yup from 'yup';
 import IngredientForm, { INGREDIENT_VALIDATION_SCHEMA } from "./IngredientForm";
 import styles from './RecipyForm.module.css';
@@ -15,17 +17,27 @@ const RECIPY_VALIDATION_SCHEMA = yup.object({
 	ingredients: yup.array().of(INGREDIENT_VALIDATION_SCHEMA).min(1, 'Must create at least one ingredient')
 });
 
-function submit(values: any, { setSubmitting }: any) {
-	console.log(values);
-	setSubmitting(false);
-}
+
 
 export default function RecipyForm() {
+
+	const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
+	const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
+
+	const submit = (values: any, { setSubmitting }: any) => {
+		axios.post('/api/recipy/', values).then(response => {
+			setShowSuccessSnackbar(true);
+		}).catch(error => {
+			setShowErrorSnackbar(true);
+		}).finally(() => {
+			setSubmitting(false);
+		});
+	}
 
 	return (
 		<>
 			<Card>
-				<CardHeader title="Create Recipy" className={styles.something}/>
+				<CardHeader title="Create Recipy" className={styles.something} />
 				<CardContent>
 					<Formik
 						initialValues={DEFAULT_INITIAL_VALUES}
@@ -52,7 +64,7 @@ export default function RecipyForm() {
 														<Add />
 													</IconButton>
 													{typeof errors.ingredients === 'string' && <FormHelperText error={true}>{errors.ingredients}</FormHelperText>}
-													
+
 
 													{
 														values.ingredients.map((ingredient: any, index: number) => (
@@ -83,6 +95,22 @@ export default function RecipyForm() {
 					</Formik>
 				</CardContent>
 			</Card>
+
+			<Snackbar
+				open={showSuccessSnackbar}
+				autoHideDuration={5000}
+				onClose={() => setShowSuccessSnackbar(false)}
+			>
+				<Alert onClose={() => setShowSuccessSnackbar(false)} severity="success">Recipy saved successfully!</Alert>
+			</Snackbar>
+
+			<Snackbar
+				open={showErrorSnackbar}
+				autoHideDuration={5000}
+				onClose={() => setShowErrorSnackbar(false)}
+			>
+				<Alert onClose={() => setShowErrorSnackbar(false)} severity="error">Something went wrong during save</Alert>
+			</Snackbar>
 		</>
 	);
 

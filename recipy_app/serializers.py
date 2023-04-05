@@ -29,8 +29,12 @@ class RecipySerializer(ModelSerializer):
 
 		for ingredient in ingredients:
 			try:
-				existing_ingredient = Ingredient.objects.get(id=ingredient['id'])
-				existing_ingredient.recipies.add(recipy) # type: ignore
+				if hasattr(ingredient, 'id'):
+					existing_ingredient = Ingredient.objects.get(id=ingredient['id'])
+					existing_ingredient.recipies.add(recipy) # type: ignore
+				else:
+					new_ingredient = Ingredient.objects.create(**ingredient)
+					new_ingredient.recipies.add(recipy) # type: ignore
 			except Ingredient.DoesNotExist:
 				new_ingredient = Ingredient.objects.create(**ingredient)
 				new_ingredient.recipies.add(recipy) # type: ignore
@@ -44,8 +48,12 @@ class RecipySerializer(ModelSerializer):
 		ingredients = validated_data.pop('ingredients')
 		for ingredient in ingredients:
 			try:
-				existing_ingredient = Ingredient.objects.get(id=ingredient['id'])
-				existing_ingredient.recipies.add(instance) # type: ignore
+				if hasattr(ingredient, 'id'):
+					existing_ingredient = Ingredient.objects.get(id=ingredient['id'])
+					existing_ingredient.recipies.add(instance) # type: ignore
+				else:
+					new_ingredient = Ingredient.objects.create(**ingredient)
+					new_ingredient.recipies.add(recipy) # type: ignore
 			except Ingredient.DoesNotExist:
 				new_ingredient = Ingredient.objects.create(**ingredient)
 				new_ingredient.recipies.add(instance) # type: ignore
