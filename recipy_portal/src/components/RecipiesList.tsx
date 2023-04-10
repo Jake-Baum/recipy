@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import RecipySummaryCard from "./recipy/RecipySummaryCard";
+import { Fab } from "@mui/material";
+import { Add } from "@mui/icons-material";
 
 export default function RecipiesList() {
 
@@ -17,16 +20,14 @@ export default function RecipiesList() {
 	return (
 		<>
 			<h2>Recipies</h2>
-			<ul>
-				{
-					recipies.map((item: any) => (
-						<li key={item.id}>
-							<Link to={`/recipy/${item.id}`}><span>{item.id} - {item.title}</span></Link>
-						</li>
-					))
-				}
-			</ul>
-			<Link to="/recipy/create">Create Recipy</Link>
+			{
+				recipies.map((item: any) => (
+					<RecipySummaryCard recipy={item} key={item.id} />
+				))
+			}
+			<Fab color="primary" variant="extended">
+				<Link to="/recipy/create"><Add /> Create Recipy</Link>
+			</Fab>
 		</>
 	);
 }

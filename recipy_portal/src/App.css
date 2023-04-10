@@ -1,3 +1,7 @@
 .main-wrapper {
 	margin: 2em;
 }
+
+a {
+	text-decoration: none;
+}

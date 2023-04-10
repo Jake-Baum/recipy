@@ -1,0 +1,8 @@
+.recipy-summary-card {
+	border-radius: 5px;
+	margin: 1em;
+}
+
+.recipy-summary-card:hover {
+	background-color: #EEEEEE;
+}
