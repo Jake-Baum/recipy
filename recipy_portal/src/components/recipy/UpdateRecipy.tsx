@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import RecipyForm from "./RecipyForm";
 import Recipy from "../../model/recipy.interface";
+import { useSnackbar } from "../../services/SnackBarService";
 
 export default function UpdateRecipy() {
-	const [successMessage, setSuccessMessage] = useState<string | null>(null);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const snackbar = useSnackbar();
 	const [recipy, setRecipy] = useState<Recipy | undefined>(undefined);
 
 	const id = useParams().id;
@@ -16,27 +16,21 @@ export default function UpdateRecipy() {
 		axios.get<Recipy>(`/api/recipy/${id}/`).then(response => {
 			setRecipy(response.data);
 		}).catch(error => {
-			switch (error.response.status) {
-				case 400:
-					setErrorMessage(error.response.data.non_field_errors[0]);
-					break;
-				default:
-					setErrorMessage('An unexpected error occurred');
-			}
+			snackbar({ message: 'An unexpected error occurred', severity: 'error' });
 		});
 	}, [id]);
 
 
 	const submit = (values: any, { setSubmitting }: any) => {
 		axios.put(`/api/recipy/${id}/`, values).then(response => {
-			setSuccessMessage('Recipy updated successfully');
+			snackbar({ message: 'Recipy updated successfully', severity: 'success' });
 		}).catch(error => {
 			switch (error.response.status) {
 				case 400:
-					setErrorMessage(error.response.data.non_field_errors[0]);
+					snackbar({ message: error.response.data.non_field_errors[0], severity: 'error' });
 					break;
 				default:
-					setErrorMessage('An unexpected error occurred');
+					snackbar({ message: 'An unexpected error occurred', severity: 'error' });
 			}
 		}).finally(() => {
 			setSubmitting(false);
@@ -51,24 +45,6 @@ export default function UpdateRecipy() {
 					<RecipyForm submit={submit} value={recipy}></RecipyForm>
 				</CardContent>
 			</Card>
-
-			<Snackbar
-				open={!!successMessage}
-				autoHideDuration={5000}
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				onClose={() => setSuccessMessage(null)}
-			>
-				<Alert onClose={() => setSuccessMessage(null)} severity="success">{successMessage}</Alert>
-			</Snackbar>
-
-			<Snackbar
-				open={!!errorMessage}
-				autoHideDuration={5000}
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				onClose={() => setErrorMessage(null)}
-			>
-				<Alert onClose={() => setErrorMessage(null)} severity="error">{errorMessage}</Alert>
-			</Snackbar>
 		</>
 	);
 }

@@ -5,24 +5,23 @@ import { useNavigate } from "react-router-dom";
 import Recipy from "../../model/recipy.interface";
 import RecipyForm from "./RecipyForm";
 import styles from './RecipyForm.module.css';
+import { useSnackbar } from "../../services/SnackBarService";
 
 export default function CreateRecipy() {
-	const [successMessage, setSuccessMessage] = useState<string | null>(null);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+	const snackbar = useSnackbar();
 	const navigate = useNavigate();
 
 	const submit = (values: any, { setSubmitting }: any) => {
 		axios.post<Recipy>('/api/recipy/', values).then((response: { data: Recipy }) => {
-			setSuccessMessage('Recipy created successfully');
+			snackbar({ message: 'Recipy created successfully', severity: 'success' });
 			navigate(`/recipy/${response.data.id}`);
 		}).catch(error => {
 			switch (error.response.status) {
 				case 400:
-					setErrorMessage(error.response.data.non_field_errors[0]);
+					snackbar({ message: error.response.data.non_field_errors[0], severity: 'error' });
 					break;
 				default:
-					setErrorMessage('An unexpected error occurred');
+					snackbar({ message: 'An unexpected error occurred', severity: 'error' });
 			}
 		}).finally(() => {
 			setSubmitting(false);
@@ -37,24 +36,6 @@ export default function CreateRecipy() {
 					<RecipyForm submit={submit}></RecipyForm>
 				</CardContent>
 			</Card>
-
-			<Snackbar
-				open={!!successMessage}
-				autoHideDuration={5000}
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				onClose={() => setSuccessMessage(null)}
-			>
-				<Alert onClose={() => setSuccessMessage(null)} severity="success">{successMessage}</Alert>
-			</Snackbar>
-
-			<Snackbar
-				open={!!errorMessage}
-				autoHideDuration={5000}
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				onClose={() => setErrorMessage(null)}
-			>
-				<Alert onClose={() => setErrorMessage(null)} severity="error">{errorMessage}</Alert>
-			</Snackbar>
 		</>
 	);
 }
