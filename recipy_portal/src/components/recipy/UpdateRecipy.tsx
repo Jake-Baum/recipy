@@ -1,36 +1,43 @@
 import { Alert, Card, CardContent, CardHeader, Snackbar } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {useParams} from "react-router-dom"
+import { useParams } from "react-router-dom"
 import RecipyForm from "./RecipyForm";
+import Recipy from "../../model/recipy.interface";
 
 export default function UpdateRecipy() {
-	const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
-	const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
-	const [recipy, setRecipy] = useState(undefined);
+	const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [recipy, setRecipy] = useState<Recipy | undefined>(undefined);
 
 	const id = useParams().id;
-	
+
 	useEffect(() => {
-		let mounted = true;
-
-		axios.get(`/api/recipy/${id}/`).then(response => {
-			if (mounted) {
-				setRecipy(response.data);
-			}
+		axios.get<Recipy>(`/api/recipy/${id}/`).then(response => {
+			setRecipy(response.data);
 		}).catch(error => {
-			console.error(error);
+			switch (error.response.status) {
+				case 400:
+					setErrorMessage(error.response.data.non_field_errors[0]);
+					break;
+				default:
+					setErrorMessage('An unexpected error occurred');
+			}
 		});
-
-		return () => { mounted = false; };
-	}, []);
+	}, [id]);
 
 
 	const submit = (values: any, { setSubmitting }: any) => {
 		axios.put(`/api/recipy/${id}/`, values).then(response => {
-			setShowSuccessSnackbar(true);
+			setSuccessMessage('Recipy updated successfully');
 		}).catch(error => {
-			setShowErrorSnackbar(true);
+			switch (error.response.status) {
+				case 400:
+					setErrorMessage(error.response.data.non_field_errors[0]);
+					break;
+				default:
+					setErrorMessage('An unexpected error occurred');
+			}
 		}).finally(() => {
 			setSubmitting(false);
 		});
@@ -46,21 +53,21 @@ export default function UpdateRecipy() {
 			</Card>
 
 			<Snackbar
-				open={showSuccessSnackbar}
+				open={!!successMessage}
 				autoHideDuration={5000}
-				anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-				onClose={() => setShowSuccessSnackbar(false)}
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+				onClose={() => setSuccessMessage(null)}
 			>
-				<Alert onClose={() => setShowSuccessSnackbar(false)} severity="success">Recipy updated successfully!</Alert>
+				<Alert onClose={() => setSuccessMessage(null)} severity="success">{successMessage}</Alert>
 			</Snackbar>
 
 			<Snackbar
-				open={showErrorSnackbar}
+				open={!!errorMessage}
 				autoHideDuration={5000}
-				anchorOrigin={{vertical: "bottom", horizontal: "center"}}
-				onClose={() => setShowErrorSnackbar(false)}
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+				onClose={() => setErrorMessage(null)}
 			>
-				<Alert onClose={() => setShowErrorSnackbar(false)} severity="error">Something went wrong during update</Alert>
+				<Alert onClose={() => setErrorMessage(null)} severity="error">{errorMessage}</Alert>
 			</Snackbar>
 		</>
 	);

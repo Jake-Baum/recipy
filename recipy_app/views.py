@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -13,15 +14,15 @@ class RecipiesView(APIView):
   authentication_classes = (BasicAuthentication, )
 
   def get(self, request):
-    recipies = Recipy.objects.filter(**request.GET.dict())
+    recipies = Recipy.objects.filter(owner=request.user).order_by('id') 
 
     return JsonResponse(RecipySerializer(recipies, many=True).data, safe=False) 
   
   def post(self, request):
-    recipy = RecipySerializer(data=request.data)
+    recipy = RecipySerializer(data=request.data, context={'request': request})
 
     if not recipy.is_valid():
-      return HttpResponseBadRequest()
+      return JsonResponse(recipy.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
     
     recipy.save()
     return JsonResponse(recipy.data, safe=False)
@@ -38,9 +39,9 @@ class RecipyView(APIView):
   def put(self, request, id):
     recipy = get_object_or_404(Recipy, pk=id)
 
-    new_recipy = RecipySerializer(data=request.data, instance=recipy)
+    new_recipy = RecipySerializer(data=request.data, instance=recipy, context={'request': request})
     if not new_recipy.is_valid():
-      return HttpResponseBadRequest()
+      return JsonResponse(new_recipy.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
     
     new_recipy.save()
     return JsonResponse(new_recipy.data, safe=False)
@@ -49,7 +50,7 @@ class RecipyView(APIView):
     recipy = get_object_or_404(Recipy, pk=id)
     recipy.delete()
 
-    return HttpResponse(status=204)
+    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 class IngredientsView(APIView):
   def get(self, request):

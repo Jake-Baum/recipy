@@ -7,17 +7,11 @@ export default function RecipiesList() {
 	const [recipies, setRecipies] = useState([]);
 
 	useEffect(() => {
-		let mounted = true;
-
 		axios.get('/api/recipy').then(response => {
-			if (mounted) {
-				setRecipies(response.data);
-			}
+			setRecipies(response.data);
 		}).catch(error => {
 			console.error(error);
 		});
-
-		return () => { mounted = false; };
 	}, []);
 
 	return (
